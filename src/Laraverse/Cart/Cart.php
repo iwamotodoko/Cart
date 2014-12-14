@@ -183,7 +183,7 @@ class Cart
      */
     public function destroy()
     {
-        $this->event->fire('cart.destroy', $this->getContent());
+        $this->event->fire('cart.destroying', $this->getContent());
 
         $this->session->forget($this->getInstance());
 

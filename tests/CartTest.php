@@ -281,5 +281,28 @@ class CartTest extends PHPUnit_Framework_TestCase {
 		$this->assertFalse($this->cart->content()->isEmpty());
 	}
 
+	public function testCartCanBeDestroyed()
+	{
+		$this->events->shouldReceive('fire')->once()->with('cart.adding', M::type('array'));
+		$this->events->shouldReceive('fire')->once()->with('cart.added', M::any());
+		$this->events->shouldReceive('fire')->once()->with('cart.destroying', M::any());
+		$this->events->shouldReceive('fire')->once()->with('cart.destroyed');
+
+		$this->cart->add([
+			'id' => 'LEA_1',
+			'name' => 'Product 1',
+			'quantity' => 1,
+			'price' => 1789.43,
+			'options' => [
+				'condition' => 'nm',
+				'style' => 'normal'
+			]
+		]);
+
+		$this->cart->destroy();
+		$this->assertInstanceOf(CartCollection::class, $this->cart->content());
+		$this->assertTrue($this->cart->content()->isEmpty());
+	}
+
 }
 
