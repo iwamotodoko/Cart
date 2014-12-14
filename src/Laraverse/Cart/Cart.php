@@ -92,59 +92,31 @@ class Cart {
 	/**
 	 * Add a row to the cart
 	 *
-	 * @param string|array  $id       Unique ID of the item|Item formated as array|Array of items
-	 * @param string 	    $name     Name of the item
-	 * @param int    	    $qty      Item qty to add to the cart
-	 * @param float  	    $price    Price of one item
-	 * @param array  	    $options  Array of additional options, such as 'size' or 'color'
+	 * @param string|array  $data Item(s) to be added
+	 *
+	 * @return boolean
 	 */
-	public function add($id, $name = null, $qty = null, $price = null, array $options = [])
+	public function add(array $data)
 	{
-		// If the first parameter is an array we need to call the add() function again
-		if(is_array($id))
-		{
 			// And if it's not only an array, but a multidimensional array, we need to
 			// recursively call the add function
-			if($this->is_multi($id))
-			{
-				// Fire the cart.batch event
-				$this->event->fire('cart.batch', $id);
-
-				foreach($id as $item)
-				{
-					$options = array_get($item, 'options', []);
-					$this->addRow($item['id'], $item['name'], $item['qty'], $item['price'], $options);
+			if($this->is_multi($data)) {
+				foreach ($data as $item) {
+					$this->add($item);
 				}
-
-				// Fire the cart.batched event
-				$this->event->fire('cart.batched', $id);
-
-				return;
 			}
 
-			$options = array_get($id, 'options', []);
-
+			$this->isValidItem($data);
 			// Fire the cart.add event
-			$this->event->fire('cart.add', array_merge($id, ['options' => $options]));
+			$this->event->fire('cart.adding', $data);
 
-			$result = $this->addRow($id['id'], $id['name'], $id['qty'], $id['price'], $options);
+			$result = $this->addRow($data['id'], $data['name'], $data['quantity'], $data['price'], $data['options']);
 
 			// Fire the cart.added event
-			$this->event->fire('cart.added', array_merge($id, ['options' => $options]));
+			$this->event->fire('cart.added', $data);
 
 			return $result;
 		}
-
-		// Fire the cart.add event
-		$this->event->fire('cart.add', compact('id', 'name', 'qty', 'price', 'options'));
-
-		$result = $this->addRow($id, $name, $qty, $price, $options);
-
-		// Fire the cart.added event
-		$this->event->fire('cart.added', compact('id', 'name', 'qty', 'price', 'options'));
-
-		return $result;
-	}
 
 	/**
 	 * Update the quantity of one row of the cart
@@ -523,6 +495,22 @@ class Cart {
 	protected function is_multi(array $array)
 	{
 		return is_array(head($array));
+	}
+
+	/**
+	 * Checks that the item about to be added to the cart is valid.
+	 * @param array $item
+	 */
+	protected function isValidItem(array $item) {
+		if(empty($item)) {
+			throw new \Laraverse\Cart\Exceptions\InvalidItemException;
+		}
+		if(!is_numeric($item['quantity'])) {
+			throw new \Laraverse\Cart\Exceptions\InvalidQtyException;
+		}
+		if(!is_numeric($item['price'])) {
+			throw new \Laraverse\Cart\Exceptions\InvalidPriceException;
+		}
 	}
 
 }
