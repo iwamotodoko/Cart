@@ -1,5 +1,5 @@
 <?php namespace Laraverse\Cart\Exceptions;
 
-class UnknownModelException extends \Exception
+class Instance extends \Exception
 {
 }

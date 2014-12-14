@@ -1,10 +1,9 @@
 <?php
 
 use Laraverse\Cart\Cart;
-use \Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
-use Mockery as m;
-
-require_once __DIR__.'/helpers/SessionMock.php';
+use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
+use Illuminate\Session\Store as SessionStore;
+use Mockery as M;
 
 class CartTest extends PHPUnit_Framework_TestCase {
 
@@ -13,15 +12,15 @@ class CartTest extends PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
-		$session= new SessionMock;
-		$this->events = m::mock(EventDispatcher::class);
+		$session= M::mock(SessionStore::class)->makePartial();
+		$this->events = M::mock(EventDispatcher::class);
 
 		$this->cart = new Cart($session, $this->events);
 	}
 
 	public function tearDown()
 	{
-		m::close();
+		M::close();
 	}
 
 	public function testCartCanAdd()

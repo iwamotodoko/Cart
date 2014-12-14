@@ -1,14 +1,15 @@
 <?php namespace Laraverse\Cart;
 
+use Illuminate\Session\Store as SessionStore;
 use Illuminate\Contracts\Events\Dispatcher;
 use Laraverse\Cart\Collections\Cart as CartCollection;
 use Laraverse\Cart\Collections\Row as CartRowCollection;
 use Laraverse\Cart\Collections\RowOptions as CartRowOptionsCollection;
-use Laraverse\Cart\Exceptions\InstanceException;
-use Laraverse\Cart\Exceptions\InvalidPriceException;
-use Laraverse\Cart\Exceptions\InvalidQtyException;
-use Laraverse\Cart\Exceptions\InvalidItemException;
-use Laraverse\Cart\Exceptions\InvalidRowIDException;
+use Laraverse\Cart\Exceptions\Instance as InstanceException;
+use Laraverse\Cart\Exceptions\InvalidPrice as InvalidPriceException;
+use Laraverse\Cart\Exceptions\InvalidQuantity as InvalidQtyException;
+use Laraverse\Cart\Exceptions\InvalidItem as InvalidItemException;
+use Laraverse\Cart\Exceptions\InvalidRowID as InvalidRowIDException;
 
 class Cart
 {
@@ -37,10 +38,10 @@ class Cart
     /**
      * Constructor
      *
-     * @param \Illuminate\Session\SessionManager $session Session class instance
+     * @param \Illuminate\Session\Store $session Session class instance
      * @param \Illuminate\Contracts\Events\Dispatcher $event Event class instance
      */
-    public function __construct($session, Dispatcher $event)
+    public function __construct(SessionStore $session, Dispatcher $event)
     {
         $this->session = $session;
         $this->event = $event;
@@ -53,7 +54,7 @@ class Cart
      *
      * @param  string $instance Cart instance name
      *
-     * @throws \Laraverse\Cart\Exceptions\InstanceException
+     * @throws \Laraverse\Cart\Exceptions\Instance
      * @return \Laraverse\Cart\Cart
      */
     public function instance($instance = null)
@@ -89,7 +90,7 @@ class Cart
         // Fire the cart.add event
         $this->event->fire('cart.adding', $data);
 
-        $result = $this->addRow($data['id'], $data['name'], $data['quantity'], $data['price'], $data['options']);
+        $result = $this->addRow($data);
 
         // Fire the cart.added event
         $this->event->fire('cart.added', $data);
@@ -101,35 +102,24 @@ class Cart
      * Update the quantity of one row of the cart
      *
      * @param  string $rowId The rowid of the item you want to update
-     * @param  integer|array $attribute New quantity of the item|Array of attributes to update
+     * @param  array $data Array of attributes to update
      *
+     * @throws \Laraverse\Cart\Exceptions\InvalidRowID
      * @return boolean
      */
-    public function update($rowId, $attribute)
+    public function update($rowId, array $data)
     {
         if (!$this->hasRowId($rowId)) {
             throw new InvalidRowIDException;
         }
 
-        if (is_array($attribute)) {
-            // Fire the cart.update event
-            $this->event->fire('cart.update', $rowId);
-
-            $result = $this->updateAttribute($rowId, $attribute);
-
-            // Fire the cart.updated event
-            $this->event->fire('cart.updated', $rowId);
-
-            return $result;
-        }
-
         // Fire the cart.update event
-        $this->event->fire('cart.update', $rowId);
+        $this->event->fire('cart.updating', [$this->get($rowId), $data]);
 
-        $result = $this->updateQty($rowId, $attribute);
+        $result = $this->updateAttribute($rowId, $data);
 
         // Fire the cart.updated event
-        $this->event->fire('cart.updated', $rowId);
+        $this->event->fire('cart.updated', $result);
 
         return $result;
     }
@@ -139,6 +129,7 @@ class Cart
      *
      * @param  string $rowId The rowid of the item
      *
+     * @throws \Laraverse\Cart\Exceptions\InvalidRowID
      * @return boolean
      */
     public function remove($rowId)
@@ -150,12 +141,12 @@ class Cart
         $cart = $this->getContent();
 
         // Fire the cart.remove event
-        $this->event->fire('cart.remove', $rowId);
+        $this->event->fire('cart.removing', $this->get($rowId));
 
         $cart->forget($rowId);
 
         // Fire the cart.removed event
-        $this->event->fire('cart.removed', $rowId);
+        $this->event->fire('cart.removed');
 
         return $this->updateCart($cart);
     }
@@ -165,7 +156,7 @@ class Cart
      *
      * @param  string $rowId The ID of the row to fetch
      *
-     * @return \Laraverse\Cart\CartCollection
+     * @return \Laraverse\Cart\Collections\Row
      */
     public function get($rowId)
     {
@@ -177,7 +168,7 @@ class Cart
     /**
      * Get the cart content
      *
-     * @return \Laraverse\Cart\CartRowCollection
+     * @return \Laraverse\Cart\Cart
      */
     public function content()
     {
@@ -189,19 +180,15 @@ class Cart
     /**
      * Empty the cart
      *
-     * @return boolean
+     * @return void
      */
     public function destroy()
     {
-        // Fire the cart.destroy event
-        $this->event->fire('cart.destroy');
+        $this->event->fire('cart.destroy', $this->getContent());
 
-        $result = $this->updateCart(null);
+        $this->session->forget($this->getInstance());
 
-        // Fire the cart.destroyed event
         $this->event->fire('cart.destroyed');
-
-        return $result === null;
     }
 
     /**
@@ -242,7 +229,7 @@ class Cart
 
         $count = 0;
 
-        foreach ($cart AS $row) {
+        foreach ($cart as $row) {
             $count += $row->qty;
         }
 
@@ -276,35 +263,20 @@ class Cart
     /**
      * Add row to the cart
      *
-     * @param string $id Unique ID of the item
-     * @param string $name Name of the item
-     * @param int $qty Item qty to add to the cart
-     * @param float $price Price of one item
-     * @param array $options Array of additional options, such as 'size' or 'color'
+     * @param array $data The data to be added for the row.
+     *
+     * @return \Laraverse\Cart\Collections\Cart
      */
-    protected function addRow($id, $name, $qty, $price, array $options = [])
+    protected function addRow(array $data)
     {
-        if (empty($id) || empty($name) || empty($qty) || !isset($price)) {
-            throw new InvalidItemException;
-        }
-
-        if (!is_numeric($qty)) {
-            throw new InvalidQtyException;
-        }
-
-        if (!is_numeric($price)) {
-            throw new InvalidPriceException;
-        }
-
         $cart = $this->getContent();
 
-        $rowId = $this->generateRowId($id, $options);
+        $rowId = $this->generateRowId($data);
 
         if ($cart->has($rowId)) {
-            $row = $cart->get($rowId);
-            $cart = $this->updateRow($rowId, ['qty' => $row->qty + $qty]);
+            $cart = $this->updateRow($rowId, $data);
         } else {
-            $cart = $this->createRow($rowId, $id, $name, $qty, $price, $options);
+            $cart = $this->createRow($data);
         }
 
         return $this->updateCart($cart);
@@ -313,22 +285,23 @@ class Cart
     /**
      * Generate a unique id for the new row
      *
-     * @param  string $id Unique ID of the item
-     * @param  array $options Array of additional options, such as 'size' or 'color'
+     * @param  array $data Data to generate an ID for.
      *
      * @return boolean
      */
-    protected function generateRowId($id, $options)
+    protected function generateRowId(array $data)
     {
-        ksort($options);
-
-        return md5($id . serialize($options));
+        if (isset($data['options'])) {
+            ksort($data['options']);
+            return sha1($data['id'] . serialize($data['options']));
+        }
+        return sha1($data['id']);
     }
 
     /**
      * Check if a rowid exists in the current cart instance
      *
-     * @param  string $id Unique ID of the item
+     * @param  string $rowId Unique ID of the item
      *
      * @return boolean
      */
@@ -340,11 +313,11 @@ class Cart
     /**
      * Update the cart
      *
-     * @param  \Laraverse\Cart\CartCollection $cart The new cart content
+     * @param  \Laraverse\Cart\Collections\Cart $cart The new cart content
      *
      * @return boolean
      */
-    protected function updateCart($cart)
+    protected function updateCart(CartCollection $cart)
     {
         return $this->session->put($this->getInstance(), $cart);
     }
@@ -352,13 +325,11 @@ class Cart
     /**
      * Get the carts content, if there is no cart content set yet, return a new empty Collection
      *
-     * @return \Laraverse\Cart\CartCollection
+     * @return \Laraverse\Cart\Collections\Cart
      */
     protected function getContent()
     {
-        $content = ($this->session->has($this->getInstance())) ? $this->session->get($this->getInstance()) : new CartCollection;
-
-        return $content;
+        return ($this->session->has($this->getInstance())) ? $this->session->get($this->getInstance()) : new CartCollection;
     }
 
     /**
@@ -375,27 +346,25 @@ class Cart
      * Update a row if the rowId already exists
      *
      * @param  string $rowId The ID of the row to update
-     * @param  integer $qty The quantity to add to the row
+     * @param  array $data The array of data to update the row with.
      *
-     * @return \Laraverse\Cart\CartCollection
+     * @return \Laraverse\Cart\Collections\Cart
      */
-    protected function updateRow($rowId, $attributes)
+    protected function updateRow($rowId, $data)
     {
         $cart = $this->getContent();
 
         $row = $cart->get($rowId);
 
-        foreach ($attributes as $key => $value) {
-            if ($key == 'options') {
+        $this->isValidItem($data);
+
+        foreach ($data as $key => $value) {
+            if ($key === 'options') {
                 $options = $row->options->merge($value);
                 $row->put($key, $options);
             } else {
                 $row->put($key, $value);
             }
-        }
-
-        if (!is_null(array_keys($attributes, ['qty', 'price']))) {
-            $row->put('subtotal', $row->qty * $row->price);
         }
 
         $cart->put($rowId, $row);
@@ -406,49 +375,22 @@ class Cart
     /**
      * Create a new row Object
      *
-     * @param  string $rowId The ID of the new row
-     * @param  string $id Unique ID of the item
-     * @param  string $name Name of the item
-     * @param  int $qty Item qty to add to the cart
-     * @param  float $price Price of one item
-     * @param  array $options Array of additional options, such as 'size' or 'color'
+     * @param  array $data The data to create the row with.
      *
-     * @return \Laraverse\Cart\CartCollection
+     * @return \Laraverse\Cart\Collections\Cart
      */
-    protected function createRow($rowId, $id, $name, $qty, $price, $options)
+    protected function createRow(array $data)
     {
         $cart = $this->getContent();
 
-        $newRow = new CartRowCollection([
-            'rowid'    => $rowId,
-            'id'       => $id,
-            'name'     => $name,
-            'qty'      => $qty,
-            'price'    => $price,
-            'options'  => new CartRowOptionsCollection($options),
-            'subtotal' => $qty * $price
-        ], $this->associatedModel, $this->associatedModelNamespace);
+        $options = $data['options'];
+        $data['options'] = new CartRowOptionsCollection($options);
 
-        $cart->put($rowId, $newRow);
+        $newRow = new CartRowCollection($data);
+
+        $cart->put($newRow['rowId'], $newRow);
 
         return $cart;
-    }
-
-    /**
-     * Update the quantity of a row
-     *
-     * @param  string $rowId The ID of the row
-     * @param  int $qty The qty to add
-     *
-     * @return \Laraverse\Cart\CartCollection
-     */
-    protected function updateQty($rowId, $qty)
-    {
-        if ($qty <= 0) {
-            return $this->remove($rowId);
-        }
-
-        return $this->updateRow($rowId, ['qty' => $qty]);
     }
 
     /**
@@ -479,17 +421,22 @@ class Cart
     /**
      * Checks that the item about to be added to the cart is valid.
      *
-     * @throws \Laraverse\Cart\Exceptions\InvalidItemException
-     * @throws \Laraverse\Cart\Exceptions\InvalidPriceException
-     * @throws \Laraverse\Cart\Exceptions\InvalidQtyException
+     * @throws \Laraverse\Cart\Exceptions\InvalidItem
+     * @throws \Laraverse\Cart\Exceptions\InvalidPrice
+     * @throws \Laraverse\Cart\Exceptions\InvalidQuantity
      *
      * @param array $item
      */
     protected function isValidItem(array $item)
     {
-        if (empty($item)) {
+        if (empty($item)
+            || !isset($item['name'])
+            || !isset($item['quantity'])
+            || !isset($item['price'])
+        ) {
             throw new InvalidItemException;
         }
+
         if (!is_numeric($item['quantity'])) {
             throw new InvalidQtyException;
         }
