@@ -23,6 +23,10 @@ class Row extends Collection
         return null;
     }
 
+    public function getSubtotal() {
+        return $this->quantity * $this->price;
+    }
+
     public function search($search, $strict = false)
     {
         $found = false;
