@@ -65,7 +65,6 @@ class Cart
 
         $this->instance = $instance;
 
-        // Return self so the method is chainable
         return $this;
     }
 
