@@ -10,6 +10,7 @@ use Laraverse\Cart\Exceptions\InvalidPrice as InvalidPriceException;
 use Laraverse\Cart\Exceptions\InvalidQuantity as InvalidQtyException;
 use Laraverse\Cart\Exceptions\InvalidItem as InvalidItemException;
 use Laraverse\Cart\Exceptions\InvalidRowID as InvalidRowIDException;
+use Laraverse\Cart\Exceptions\ItemExists as ItemExistsException;
 
 class Cart
 {
@@ -73,26 +74,28 @@ class Cart
      *
      * @param string|array $data Item(s) to be added
      *
-     * @return boolean
+     * @return void
      */
     public function add(array $data)
     {
-        // And if it's not only an array, but a multidimensional array, we need to
-        // recursively call the add function
+        // If we have a multidimensional array call this function recursively on each item.
         if ($this->is_multi($data)) {
             foreach ($data as $item) {
-                $this->add($item);
+                $this->addItem($item);
             }
+        } else {
+            $this->addItem($data);
         }
+    }
 
+    protected function addItem(array $data) {
         $this->isValidItem($data);
-        // Fire the cart.add event
+
         $this->event->fire('cart.adding', $data);
 
         $result = $this->addRow($data);
 
-        // Fire the cart.added event
-        $this->event->fire('cart.added', $data);
+        $this->event->fire('cart.added', $result);
 
         return $result;
     }
@@ -112,12 +115,10 @@ class Cart
             throw new InvalidRowIDException;
         }
 
-        // Fire the cart.update event
         $this->event->fire('cart.updating', [$this->get($rowId), $data]);
 
         $result = $this->updateAttribute($rowId, $data);
 
-        // Fire the cart.updated event
         $this->event->fire('cart.updated', $result);
 
         return $result;
@@ -263,7 +264,7 @@ class Cart
      * Add row to the cart
      *
      * @param array $data The data to be added for the row.
-     *
+     * @throws \Laraverse\Cart\Exceptions\ItemExists
      * @return \Laraverse\Cart\Collections\Cart
      */
     protected function addRow(array $data)
@@ -273,7 +274,7 @@ class Cart
         $rowId = $this->generateRowId($data);
 
         if ($cart->has($rowId)) {
-            $cart = $this->updateRow($rowId, $data);
+            throw new ItemExistsException;
         } else {
             $cart = $this->createRow($data);
         }
@@ -355,8 +356,6 @@ class Cart
 
         $row = $cart->get($rowId);
 
-        $this->isValidItem($data);
-
         foreach ($data as $key => $value) {
             if ($key === 'options') {
                 $options = $row->options->merge($value);
@@ -381,13 +380,13 @@ class Cart
     protected function createRow(array $data)
     {
         $cart = $this->getContent();
-
+        $rowId = $this->generateRowId($data);
         $options = $data['options'];
         $data['options'] = new CartRowOptionsCollection($options);
 
         $newRow = new CartRowCollection($data);
 
-        $cart->put($newRow['rowId'], $newRow);
+        $cart->put($rowId, $newRow);
 
         return $cart;
     }
@@ -428,18 +427,17 @@ class Cart
      */
     protected function isValidItem(array $item)
     {
-        if (empty($item)
-            || !isset($item['name'])
-            || !isset($item['quantity'])
-            || !isset($item['price'])
+        if ( ! isset($item['name'])
+            || ! isset($item['quantity'])
+            || ! isset($item['price'])
         ) {
             throw new InvalidItemException;
         }
 
-        if (!is_numeric($item['quantity'])) {
+        if ( ! is_numeric($item['quantity'])) {
             throw new InvalidQtyException;
         }
-        if (!is_numeric($item['price'])) {
+        if ( ! is_numeric($item['price'])) {
             throw new InvalidPriceException;
         }
     }
