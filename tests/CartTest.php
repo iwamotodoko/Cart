@@ -304,5 +304,43 @@ class CartTest extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($this->cart->content()->isEmpty());
 	}
 
+	public function testCartRowIsRowCollection()
+	{
+		$this->events->shouldReceive('fire')->once()->with('cart.adding', M::type('array'));
+		$this->events->shouldReceive('fire')->once()->with('cart.added', M::any());
+
+		$this->cart->add([
+			'id' => 'LEA_1',
+			'name' => 'Product 1',
+			'quantity' => 1,
+			'price' => 1789.43,
+			'options' => [
+				'condition' => 'nm',
+				'style' => 'normal'
+			]
+		]);
+
+		$this->assertInstanceOf(RowCollection::class, $this->cart->content()->first());
+	}
+
+	public function testCartItemOptionsIsRowOptionsCollection()
+	{
+		$this->events->shouldReceive('fire')->once()->with('cart.adding', M::type('array'));
+		$this->events->shouldReceive('fire')->once()->with('cart.added', M::any());
+
+		$this->cart->add([
+			'id' => 'LEA_1',
+			'name' => 'Product 1',
+			'quantity' => 1,
+			'price' => 1789.43,
+			'options' => [
+				'condition' => 'nm',
+				'style' => 'normal'
+			]
+		]);
+
+		$this->assertInstanceOf(RowOptionsCollection::class, $this->cart->content()->first()->options);
+	}
+
 }
 
