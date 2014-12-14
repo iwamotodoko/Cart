@@ -1,46 +1,10 @@
-## LaravelShoppingcart
-[![Build Status](https://travis-ci.org/Crinsane/LaravelShoppingcart.png?branch=master)](https://travis-ci.org/Crinsane/LaravelShoppingcart)
-[![Total Downloads](https://poser.pugx.org/gloudemans/shoppingcart/downloads.png)](https://packagist.org/packages/gloudemans/shoppingcart)
+## Cart
 
-A simple shoppingcart implementation for Laravel 4.
+A simple cart implementation.
 
-## Installation
+## Docs
 
-Install the package through [Composer](http://getcomposer.org/). Edit your project's `composer.json` file by adding:
-
-### Laravel 4.2 and below
-
-```php
-"require": {
-	"laravel/framework": "4.2.*",
-	"gloudemans/shoppingcart": "~1.2"
-}
-```
-
-### Laravel 5
-
-```php
-"require": {
-	"laravel/framework": "5.0.*",
-	"gloudemans/shoppingcart": "dev-master"
-}
-```
-
-Next, run the Composer update command from the Terminal:
-
-    composer update
-
-Now all you have to do is add the service provider of the package and alias the package. To do this open your `app/config/app.php` file.
-
-Add a new line to the `service providers` array:
-
-	'Gloudemans\Shoppingcart\ShoppingcartServiceProvider'
-
-And finally add a new line to the `aliases` array:
-
-	'Cart'            => 'Gloudemans\Shoppingcart\Facades\Cart',
-
-Now you're ready to start using the shoppingcart in your application.
+Coming Soonish maybe.
 
 ## Overview
 Look at one of the following topics to learn more about LaravelShoppingcart
@@ -232,97 +196,31 @@ N.B. Keep in mind that the cart stays in the last set instance for as long as yo
 
 N.B.2 The default cart instance is called `main`, so when you're not using instances,`Cart::content();` is the same as `Cart::instance('main')->content()`.
 
-## Models
-A new feature is associating a model with the items in the cart. Let's say you have a `Product` model in your application. With the new `associate()` method, you can tell the cart that an item in the cart, is associated to the `Product` model. 
-
-That way you can access your model right from the `CartRowCollection`!
-
-Here is an example:
-
-```php
-<?php 
-
-/**
- * Let say we have a Product model that has a name and description.
- */
-
-Cart::associate('Product')->add('293ad', 'Product 1', 1, 9.99, array('size' => 'large'));
-
-
-$content = Cart::content();
-
-
-foreach($content as $row)
-{
-	echo 'You have ' . $row->qty . ' items of ' . $row->product->name . ' with description: "' . $row->product->description . '" in your cart.';
-}
-```
-
-The key to access the model is the same as the model name you associated (lowercase).
-The `associate()` method has a second optional parameter for specifying the model namespace.
-
 ## Exceptions
 The Cart package will throw exceptions if something goes wrong. This way it's easier to debug your code using the Cart package or to handle the error based on the type of exceptions. The Cart packages can throw the following exceptions:
 
 | Exception                             | Reason                                                                           |
 | ------------------------------------- | --------------------------------------------------------------------------------- |
-| *ShoppingcartInstanceException*       | When no instance is passed to the instance() method                              |
-| *ShoppingcartInvalidItemException*    | When a new product misses one of it's arguments (`id`, `name`, `qty`, `price`)   |
-| *ShoppingcartInvalidPriceException*   | When a non-numeric price is passed                                               |
-| *ShoppingcartInvalidQtyException*     | When a non-numeric quantity is passed                                            |
-| *ShoppingcartInvalidRowIDException*   | When the `$rowId` that got passed doesn't exists in the current cart             |
-| *ShoppingcartUnknownModelException*   | When an unknown model is associated to a cart row                                |
+| *Laraverse\Cart\Instance*             | When no instance is passed to the instance() method                              |
+| *Laraverse\Cart\InvalidItem*          | When a new product misses one of it's arguments (`id`, `name`, `qty`, `price`)   |
+| *Laraverse\Cart\InvalidPrice*         | When a non-numeric price is passed                                               |
+| *Laraverse\Cart\InvalidQty*           | When a non-numeric quantity is passed                                            |
+| *Laraverse\Cart\InvalidRowID*         | When the `$rowId` that got passed doesn't exists in the current cart             |
+| *Laraverse\Cart\UnknownModel*         | When an unknown model is associated to a cart row                                |
 
 ## Events
 
-The cart also has events build in. There are five events available for you to listen for.
+Events are available for you to program custom logic before or after actions are carried out. To stop the action, throw an exception.
 
-| Event                | Fired                                   |
-| -------------------- | --------------------------------------- |
-| cart.add($item)      | When a single item is added             |
-| cart.batch($items)   | When a batch of items is added          |
-| cart.update($rowId)  | When an item in the cart is updated     |
-| cart.remove($rowId)  | When an item is removed from the cart   |
-| cart.destroy()       | When the cart is destroyed              |
+| Event                       | Fired                                   |
+| ----------------------      | --------------------------------------- |
+| cart.adding($data)          | When an item is about to be added to the cart |
+| cart.added($item)           | After an item has been added to the cart      |
+| cart.updating($item, $data) | Before an existing item is updated |
+| cart.updated($item)         | When an item in the cart is updated     |
+| cart.removing($item)        | When an item is about to be removed from the cart |
+| cart.removed($item)         | When an item is removed from the cart   |
+| cart.destroying()           | When the cart is about to be destoryed |
+| cart.destroyed()            | When the cart is destroyed              |
 
-## Example
 
-Below is a little example of how to list the cart content in a table:
-
-```php
-// Controller
-
-Cart::add('192ao12', 'Product 1', 1, 9.99);
-Cart::add('1239ad0', 'Product 2', 2, 5.95, array('size' => 'large'));
-
-// View
-
-<table>
-   	<thead>
-       	<tr>
-           	<th>Product</th>
-           	<th>Qty</th>
-           	<th>Item Price</th>
-           	<th>Subtotal</th>
-       	</tr>
-   	</thead>
-
-   	<tbody>
-
-   	<?php foreach($cart as $row) :?>
-
-       	<tr>
-           	<td>
-               	<p><strong><?php echo $row->name;?></strong></p>
-               	<p><?php echo ($row->options->has('size') ? $row->options->size : '');?></p>
-           	</td>
-           	<td><input type="text" value="<?php echo $row->qty;?>"></td>
-           	<td>$<?php echo $row->price;?></td>
-           	<td>$<?php echo $row->subtotal;?></td>
-       </tr>
-
-   	<?php endforeach;?>
-
-   	</tbody>
-</table>
-```
