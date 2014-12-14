@@ -2,7 +2,7 @@
 
 use Illuminate\Support\ServiceProvider;
 
-class ShoppingcartServiceProvider extends ServiceProvider {
+class CartServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register the service provider.
@@ -13,9 +13,7 @@ class ShoppingcartServiceProvider extends ServiceProvider {
 	{
 		$this->app['cart'] = $this->app->share(function($app)
 		{
-			$session = $app['session'];
-			$events = $app['events'];
-			return new Cart($session, $events);
+			return new Cart($app['session'], $app['events']);
 		});
 	}
 }
