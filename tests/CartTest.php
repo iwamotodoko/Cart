@@ -350,5 +350,95 @@ class CartTest extends PHPUnit_Framework_TestCase {
 		$this->cart->instance();
 	}
 
+	public function testCanGetTotal()
+	{
+		$this->events->shouldReceive('fire')->twice()->with('cart.adding', M::type('array'));
+		$this->events->shouldReceive('fire')->twice()->with('cart.added', M::any());
+
+		$this->cart->add([
+			[
+				'id' => 'KTK_8',
+				'name' => 'Product 1',
+				'quantity' => 9,
+				'price' => 2.34,
+				'options' => [
+					'condition' => 'nm',
+					'style' => 'foil'
+				]
+			],
+			[
+				'id' => 'LEA_1',
+				'name' => 'Product 2',
+				'quantity' => 5,
+				'price' => 5.85,
+				'options' => [
+					'condition' => 'nm',
+					'style' => 'normal'
+				]
+			]
+		]);
+		$this->assertEquals(50.31, $this->cart->total());
+	}
+
+	public function testCartCanGetItemCount()
+	{
+		$this->events->shouldReceive('fire')->twice()->with('cart.adding', M::type('array'));
+		$this->events->shouldReceive('fire')->twice()->with('cart.added', M::any());
+
+		$this->cart->add([
+			[
+				'id' => 'KTK_8',
+				'name' => 'Product 1',
+				'quantity' => 9,
+				'price' => 2.34,
+				'options' => [
+					'condition' => 'nm',
+					'style' => 'foil'
+				]
+			],
+			[
+				'id' => 'LEA_1',
+				'name' => 'Product 2',
+				'quantity' => 5,
+				'price' => 5.85,
+				'options' => [
+					'condition' => 'nm',
+					'style' => 'normal'
+				]
+			]
+		]);
+		$this->assertEquals(14, $this->cart->count());
+	}
+
+	public function testCartCanCountRows()
+	{
+		$this->events->shouldReceive('fire')->twice()->with('cart.adding', M::type('array'));
+		$this->events->shouldReceive('fire')->twice()->with('cart.added', M::any());
+
+		$this->cart->add([
+			[
+				'id' => 'KTK_8',
+				'name' => 'Product 1',
+				'quantity' => 9,
+				'price' => 2.34,
+				'options' => [
+					'condition' => 'nm',
+					'style' => 'foil'
+				]
+			],
+			[
+				'id' => 'LEA_1',
+				'name' => 'Product 2',
+				'quantity' => 5,
+				'price' => 5.85,
+				'options' => [
+					'condition' => 'nm',
+					'style' => 'normal'
+				]
+			]
+		]);
+		$this->assertEquals(2, $this->cart->countRows());
+	}
+
 }
 
