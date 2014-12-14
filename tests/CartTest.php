@@ -108,6 +108,31 @@ class CartTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('LEA_1', $item->id);
 	}
 
+	public function testCartItemCanHaveCustomProperties()
+	{
+		$this->events->shouldReceive('fire')->once()->with('cart.adding', M::type('array'));
+		$this->events->shouldReceive('fire')->once()->with('cart.added', M::any());
+		$this->cart->add([
+			'id' => 'LEA_1',
+			'name' => 'Product 1',
+			'quantity' => 2,
+			'price' => 9.99,
+			'shipping' => [
+				'width' => 0.4,
+				'weight' => 0.2,
+				'depth' => 0.01,
+				'height' => 2
+			],
+			'options' => [
+				'condition' => 'nm',
+				'style' => 'foil'
+			]
+		]);
+
+		$item = $this->cart->get("a37595c76d81dac7f5eee81c7074fe6d113ce7a8");
+		$this->assertEquals($item->shipping['width'], 0.4);
+	}
+
 	public function testCartCanAddMultipleOptions()
 	{
 		$this->events->shouldReceive('fire')->once()->with('cart.adding', M::type('array'));
