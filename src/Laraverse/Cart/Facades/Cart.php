@@ -1,4 +1,4 @@
-<?php namespace Gloudemans\Shoppingcart\Facades;
+<?php namespace Laraverse\Cart\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
