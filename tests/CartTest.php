@@ -72,7 +72,7 @@ class CartTest extends PHPUnit_Framework_TestCase {
 
 		$cartRow = $this->cart->get('c5417b5761c7fb837e4227a38870dd4d');
 
-		$this->assertInstanceOf('Gloudemans\Shoppingcart\CartRowOptionsCollection', $cartRow->options);
+		$this->assertInstanceOf('Laraverse\Shoppingcart\CartRowOptionsCollection', $cartRow->options);
 		$this->assertEquals('large', $cartRow->options->size);
 		$this->assertEquals('red', $cartRow->options->color);
 	}
@@ -239,7 +239,7 @@ class CartTest extends PHPUnit_Framework_TestCase {
 
 		$this->cart->add('293ad', 'Product 1', 1, 9.99);
 
-		$this->assertInstanceOf('Gloudemans\Shoppingcart\CartCollection', $this->cart->content());
+		$this->assertInstanceOf('Laraverse\Shoppingcart\CartCollection', $this->cart->content());
 		$this->assertFalse($this->cart->content()->isEmpty());
 	}
 
@@ -253,7 +253,7 @@ class CartTest extends PHPUnit_Framework_TestCase {
 		$this->cart->add('293ad', 'Product 1', 1, 9.99);
 		$this->cart->destroy();
 
-		$this->assertInstanceOf('Gloudemans\Shoppingcart\CartCollection', $this->cart->content());
+		$this->assertInstanceOf('Laraverse\Shoppingcart\CartCollection', $this->cart->content());
 		$this->assertTrue($this->cart->content()->isEmpty());
 	}
 
@@ -342,7 +342,7 @@ class CartTest extends PHPUnit_Framework_TestCase {
 
 		$this->cart->add('293ad', 'Product 1', 1, 9.99);
 
-		$this->assertInstanceOf('Gloudemans\Shoppingcart\CartCollection', $this->cart->content());
+		$this->assertInstanceOf('Laraverse\Shoppingcart\CartCollection', $this->cart->content());
 	}
 
 	public function testCartCollectionHasCartRowCollection()
@@ -352,7 +352,7 @@ class CartTest extends PHPUnit_Framework_TestCase {
 
 		$this->cart->add('293ad', 'Product 1', 1, 9.99);
 
-		$this->assertInstanceOf('Gloudemans\Shoppingcart\CartRowCollection', $this->cart->content()->first());
+		$this->assertInstanceOf('Laraverse\Shoppingcart\CartRowCollection', $this->cart->content()->first());
 	}
 
 	public function testCartRowCollectionHasCartRowOptionsCollection()
@@ -362,7 +362,7 @@ class CartTest extends PHPUnit_Framework_TestCase {
 
 		$this->cart->add('293ad', 'Product 1', 1, 9.99);
 
-		$this->assertInstanceOf('Gloudemans\Shoppingcart\CartRowOptionsCollection', $this->cart->content()->first()->options);
+		$this->assertInstanceOf('Laraverse\Shoppingcart\CartRowOptionsCollection', $this->cart->content()->first()->options);
 	}
 
 	public function testCartCanAssociateWithModel()
