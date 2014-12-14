@@ -88,7 +88,8 @@ class Cart
         }
     }
 
-    protected function addItem(array $data) {
+    protected function addItem(array $data)
+    {
         $this->isValidItem($data);
 
         $this->event->fire('cart.adding', $data);
@@ -267,6 +268,7 @@ class Cart
      * Add row to the cart
      *
      * @param array $data The data to be added for the row.
+     *
      * @throws \Laraverse\Cart\Exceptions\ItemExists
      * @return \Laraverse\Cart\Collections\Cart
      */
@@ -370,7 +372,7 @@ class Cart
 
         $cart->put($rowId, $row);
 
-        if(isset($data['quantity']) && (int) $data['quantity'] === 0) {
+        if (isset($data['quantity']) && (int)$data['quantity'] === 0) {
             $this->remove($rowId);
         }
 
@@ -434,17 +436,17 @@ class Cart
      */
     protected function isValidItem(array $item)
     {
-        if ( ! isset($item['name'])
-            || ! isset($item['quantity'])
-            || ! isset($item['price'])
+        if (!isset($item['name'])
+            || !isset($item['quantity'])
+            || !isset($item['price'])
         ) {
             throw new InvalidItemException;
         }
 
-        if ( ! is_numeric($item['quantity'])) {
+        if (!is_numeric($item['quantity'])) {
             throw new InvalidQtyException;
         }
-        if ( ! is_numeric($item['price'])) {
+        if (!is_numeric($item['price'])) {
             throw new InvalidPriceException;
         }
     }
