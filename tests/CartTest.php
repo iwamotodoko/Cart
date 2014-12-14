@@ -342,5 +342,13 @@ class CartTest extends PHPUnit_Framework_TestCase {
 		$this->assertInstanceOf(RowOptionsCollection::class, $this->cart->content()->first()->options);
 	}
 
+	/**
+	 * @expectedException Laraverse\Cart\Exceptions\Instance
+	 */
+	public function testCartThrowsExceptionOnEmptyInstance()
+	{
+		$this->cart->instance();
+	}
+
 }
 
