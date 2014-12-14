@@ -1,8 +1,6 @@
 <?php namespace Laraverse\Cart;
 
 use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Session\SessionManager;
-use Illuminate\Support\Collection;
 
 class Cart {
 
