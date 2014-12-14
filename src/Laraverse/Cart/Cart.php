@@ -30,20 +30,6 @@ class Cart
     protected $instance;
 
     /**
-     * The Eloquent model a cart is associated with
-     *
-     * @var string
-     */
-    protected $associatedModel;
-
-    /**
-     * An optional namespace for the associated model
-     *
-     * @var string
-     */
-    protected $associatedModelNamespace;
-
-    /**
      * Constructor
      *
      * @param \Illuminate\Session\SessionManager $session Session class instance
@@ -72,28 +58,6 @@ class Cart
         }
 
         $this->instance = $instance;
-
-        // Return self so the method is chainable
-        return $this;
-    }
-
-    /**
-     * Set the associated model
-     *
-     * @param  string $modelName The name of the model
-     * @param  string $modelNamespace The namespace of the model
-     *
-     * @throws \Laraverse\Cart\Exceptions\UnknownModelException
-     * @return \Laraverse\Cart\Cart
-     */
-    public function associate($modelName, $modelNamespace = null)
-    {
-        $this->associatedModel = $modelName;
-        $this->associatedModelNamespace = $modelNamespace;
-
-        if (!class_exists($modelNamespace . '\\' . $modelName)) {
-            throw new Exceptions\UnknownModelException;
-        }
 
         // Return self so the method is chainable
         return $this;
