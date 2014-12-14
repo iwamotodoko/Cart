@@ -1,4 +1,4 @@
-<?php namespace Gloudemans\Shoppingcart;
+<?php namespace Laraverse\Cart;
 
 use Illuminate\Support\ServiceProvider;
 

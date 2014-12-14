@@ -1,4 +1,4 @@
-<?php namespace Gloudemans\Shoppingcart;
+<?php namespace Laraverse\Cart;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Collection;
@@ -15,7 +15,7 @@ class Cart {
 	/**
 	 * Event class instance
 	 *
-	 * @var Illuminate\Events\Dispatcher
+	 * @var Illuminate\Contracts\Events\Dispatcher
 	 */
 	protected $event;
 
@@ -58,11 +58,12 @@ class Cart {
 	 * Set the current cart instance
 	 *
 	 * @param  string  $instance  Cart instance name
-	 * @return Gloudemans\Shoppingcart\Cart
+	 * @throws \Laraverse\Cart\Exceptions\InstanceException
+	 * @return \Larverse\Cart\Cart
 	 */
 	public function instance($instance = null)
 	{
-		if(empty($instance)) throw new Exceptions\ShoppingcartInstanceException;
+		if(empty($instance)) throw new Exceptions\InstanceException;
 
 		$this->instance = $instance;
 
@@ -75,14 +76,15 @@ class Cart {
 	 *
 	 * @param  string    $modelName        The name of the model
 	 * @param  string    $modelNamespace   The namespace of the model
-	 * @return void
+	 * @throws \Laraverse\Cart\Exceptions\UnknownModelException
+	 * @return \Laraverse\Cart\Cart
 	 */
 	public function associate($modelName, $modelNamespace = null)
 	{
 		$this->associatedModel = $modelName;
 		$this->associatedModelNamespace = $modelNamespace;
 
-		if( ! class_exists($modelNamespace . '\\' . $modelName)) throw new Exceptions\ShoppingcartUnknownModelException;
+		if( ! class_exists($modelNamespace . '\\' . $modelName)) throw new Exceptions\UnknownModelException;
 
 		// Return self so the method is chainable
 		return $this;
@@ -154,7 +156,7 @@ class Cart {
 	 */
 	public function update($rowId, $attribute)
 	{
-		if( ! $this->hasRowId($rowId)) throw new Exceptions\ShoppingcartInvalidRowIDException;
+		if( ! $this->hasRowId($rowId)) throw new Exceptions\InvalidRowIDException;
 
 		if(is_array($attribute))
 		{
@@ -188,7 +190,7 @@ class Cart {
 	 */
 	public function remove($rowId)
 	{
-		if( ! $this->hasRowId($rowId)) throw new Exceptions\ShoppingcartInvalidRowIDException;
+		if( ! $this->hasRowId($rowId)) throw new Exceptions\InvalidRowIDException;
 
 		$cart = $this->getContent();
 
@@ -207,7 +209,7 @@ class Cart {
 	 * Get a row of the cart by its ID
 	 *
 	 * @param  string  $rowId  The ID of the row to fetch
-	 * @return Gloudemans\Shoppingcart\CartCollection
+	 * @return Laraverse\Cart\CartCollection
 	 */
 	public function get($rowId)
 	{
@@ -219,7 +221,7 @@ class Cart {
 	/**
 	 * Get the cart content
 	 *
-	 * @return Gloudemans\Shoppingcart\CartRowCollection
+	 * @return Laraverse\Cart\CartRowCollection
 	 */
 	public function content()
 	{
@@ -330,17 +332,17 @@ class Cart {
 	{
 		if(empty($id) || empty($name) || empty($qty) || ! isset($price))
 		{
-			throw new Exceptions\ShoppingcartInvalidItemException;
+			throw new Exceptions\InvalidItemException;
 		}
 
 		if( ! is_numeric($qty))
 		{
-			throw new Exceptions\ShoppingcartInvalidQtyException;
+			throw new Exceptions\InvalidQtyException;
 		}
 
 		if( ! is_numeric($price))
 		{
-			throw new Exceptions\ShoppingcartInvalidPriceException;
+			throw new Exceptions\InvalidPriceException;
 		}
 
 		$cart = $this->getContent();
@@ -388,7 +390,7 @@ class Cart {
 	/**
 	 * Update the cart
 	 *
-	 * @param  Gloudemans\Shoppingcart\CartCollection  $cart  The new cart content
+	 * @param  Laraverse\Cart\CartCollection  $cart  The new cart content
 	 * @return void
 	 */
 	protected function updateCart($cart)
@@ -399,7 +401,7 @@ class Cart {
 	/**
 	 * Get the carts content, if there is no cart content set yet, return a new empty Collection
 	 *
-	 * @return Gloudemans\Shoppingcart\CartCollection
+	 * @return Laraverse\Cart\CartCollection
 	 */
 	protected function getContent()
 	{
@@ -423,7 +425,7 @@ class Cart {
 	 *
 	 * @param  string   $rowId  The ID of the row to update
 	 * @param  integer  $qty    The quantity to add to the row
-	 * @return Gloudemans\Shoppingcart\CartCollection
+	 * @return Laraverse\Cart\CartCollection
 	 */
 	protected function updateRow($rowId, $attributes)
 	{
@@ -463,7 +465,7 @@ class Cart {
 	 * @param  int     $qty      Item qty to add to the cart
 	 * @param  float   $price    Price of one item
 	 * @param  array   $options  Array of additional options, such as 'size' or 'color'
-	 * @return Gloudemans\Shoppingcart\CartCollection
+	 * @return Laraverse\Cart\CartCollection
 	 */
 	protected function createRow($rowId, $id, $name, $qty, $price, $options)
 	{
@@ -489,7 +491,7 @@ class Cart {
 	 *
 	 * @param  string  $rowId  The ID of the row
 	 * @param  int     $qty    The qty to add
-	 * @return Gloudemans\Shoppingcart\CartCollection
+	 * @return Laraverse\Cart\CartCollection
 	 */
 	protected function updateQty($rowId, $qty)
 	{
@@ -506,7 +508,7 @@ class Cart {
 	 *
 	 * @param  string  $rowId       The ID of the row
 	 * @param  array   $attributes  An array of attributes to update
-	 * @return Gloudemans\Shoppingcart\CartCollection
+	 * @return Laraverse\Cart\CartCollection
 	 */
 	protected function updateAttribute($rowId, $attributes)
 	{

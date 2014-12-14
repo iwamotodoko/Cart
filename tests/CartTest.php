@@ -1,9 +1,10 @@
 <?php
 
-use Gloudemans\Shoppingcart\Cart;
-use Gloudemans\Shoppingcart\CartCollection;
-use Gloudemans\Shoppingcart\CartRowCollection;
-use Gloudemans\Shoppingcart\CartRowOptionsCollection;
+use Laraverse\Cart\Cart;
+use Laraverse\Cart\CartCollection;
+use Laraverse\Cart\CartRowCollection;
+use Laraverse\Cart\CartRowOptionsCollection;
+use \Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
 use Mockery as m;
 
 require_once __DIR__.'/helpers/SessionMock.php';
@@ -18,7 +19,7 @@ class CartTest extends PHPUnit_Framework_TestCase {
 	public function setUp()
 	{
 		$session= new SessionMock;
-		$this->events = m::mock('Illuminate\Contracts\Events\Dispatcher');
+		$this->events = m::mock(EventDispatcher::class);
 
 		$this->cart = new Cart($session, $this->events);
 	}
@@ -72,13 +73,13 @@ class CartTest extends PHPUnit_Framework_TestCase {
 
 		$cartRow = $this->cart->get('c5417b5761c7fb837e4227a38870dd4d');
 
-		$this->assertInstanceOf('Laraverse\Shoppingcart\CartRowOptionsCollection', $cartRow->options);
+		$this->assertInstanceOf(\Laraverse\Cart\CartRowOptionsCollection::class, $cartRow->options);
 		$this->assertEquals('large', $cartRow->options->size);
 		$this->assertEquals('red', $cartRow->options->color);
 	}
 
 	/**
-	 * @expectedException Gloudemans\Shoppingcart\Exceptions\ShoppingcartInvalidItemException
+	 * @expectedException Laraverse\Cart\Exceptions\InvalidItemException
 	 */
 	public function testCartThrowsExceptionOnEmptyItem()
 	{
@@ -88,7 +89,7 @@ class CartTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * @expectedException Gloudemans\Shoppingcart\Exceptions\ShoppingcartInvalidQtyException
+	 * @expectedException Laraverse\Cart\Exceptions\InvalidQtyException
 	 */
 	public function testCartThrowsExceptionOnNoneNumericQty()
 	{
@@ -98,7 +99,7 @@ class CartTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * @expectedException Gloudemans\Shoppingcart\Exceptions\ShoppingcartInvalidPriceException
+	 * @expectedException Laraverse\Cart\Exceptions\InvalidPriceException
 	 */
 	public function testCartThrowsExceptionOnNoneNumericPrice()
 	{
@@ -171,7 +172,7 @@ class CartTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * @expectedException Gloudemans\Shoppingcart\Exceptions\ShoppingcartInvalidRowIDException
+	 * @expectedException Laraverse\Cart\Exceptions\InvalidRowIDException
 	 */
 	public function testCartThrowsExceptionOnInvalidRowId()
 	{
@@ -239,7 +240,7 @@ class CartTest extends PHPUnit_Framework_TestCase {
 
 		$this->cart->add('293ad', 'Product 1', 1, 9.99);
 
-		$this->assertInstanceOf('Laraverse\Shoppingcart\CartCollection', $this->cart->content());
+		$this->assertInstanceOf(\Laraverse\Cart\CartCollection::class, $this->cart->content());
 		$this->assertFalse($this->cart->content()->isEmpty());
 	}
 
@@ -253,7 +254,7 @@ class CartTest extends PHPUnit_Framework_TestCase {
 		$this->cart->add('293ad', 'Product 1', 1, 9.99);
 		$this->cart->destroy();
 
-		$this->assertInstanceOf('Laraverse\Shoppingcart\CartCollection', $this->cart->content());
+		$this->assertInstanceOf(\Laraverse\Cart\CartCollection::class, $this->cart->content());
 		$this->assertTrue($this->cart->content()->isEmpty());
 	}
 
@@ -328,7 +329,7 @@ class CartTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * @expectedException Gloudemans\Shoppingcart\Exceptions\ShoppingcartInstanceException
+	 * @expectedException Laraverse\Cart\Exceptions\InstanceException
 	 */
 	public function testCartThrowsExceptionOnEmptyInstance()
 	{
@@ -342,7 +343,7 @@ class CartTest extends PHPUnit_Framework_TestCase {
 
 		$this->cart->add('293ad', 'Product 1', 1, 9.99);
 
-		$this->assertInstanceOf('Laraverse\Shoppingcart\CartCollection', $this->cart->content());
+		$this->assertInstanceOf(\Laraverse\Cart\CartCollection::class, $this->cart->content());
 	}
 
 	public function testCartCollectionHasCartRowCollection()
@@ -352,7 +353,7 @@ class CartTest extends PHPUnit_Framework_TestCase {
 
 		$this->cart->add('293ad', 'Product 1', 1, 9.99);
 
-		$this->assertInstanceOf('Laraverse\Shoppingcart\CartRowCollection', $this->cart->content()->first());
+		$this->assertInstanceOf(\Laraverse\Cart\CartRowCollection::class, $this->cart->content()->first());
 	}
 
 	public function testCartRowCollectionHasCartRowOptionsCollection()
@@ -362,7 +363,7 @@ class CartTest extends PHPUnit_Framework_TestCase {
 
 		$this->cart->add('293ad', 'Product 1', 1, 9.99);
 
-		$this->assertInstanceOf('Laraverse\Shoppingcart\CartRowOptionsCollection', $this->cart->content()->first()->options);
+		$this->assertInstanceOf(\Laraverse\Cart\CartRowOptionsCollection::class, $this->cart->content()->first()->options);
 	}
 
 	public function testCartCanAssociateWithModel()
@@ -401,7 +402,7 @@ class CartTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * @expectedException Gloudemans\Shoppingcart\Exceptions\ShoppingcartUnknownModelException
+	 * @expectedException Laraverse\Cart\Exceptions\UnknownModelException
 	 */
 	public function testCartThrowsExceptionOnUnknownModel()
 	{
