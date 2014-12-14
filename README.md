@@ -19,131 +19,91 @@ Look at one of the following topics to learn more about LaravelShoppingcart
 
 ## Usage
 
-The shoppingcart gives you the following methods to use:
+The cart provides the following packages:
 
-**Cart::add()**
+### Adding Items
 
 ```php
-/**
- * Add a row to the cart
- *
- * @param string|Array $id      Unique ID of the item|Item formated as array|Array of items
- * @param string       $name    Name of the item
- * @param int          $qty     Item qty to add to the cart
- * @param float        $price   Price of one item
- * @param Array        $options Array of additional options, such as 'size' or 'color'
- */
 
 // Basic form
-Cart::add('293ad', 'Product 1', 1, 9.99, array('size' => 'large'));
+$cart->add([
+    'id' => 'LEA_1',
+    'name' => 'Product 1',
+    'quantity' => 1,
+    'price' => 1789.43,
+    'options' => [
+        'condition' => 'nm',
+        'style' => 'normal'
+    ]
+]);
 
-// Array form
-Cart::add(array('id' => '293ad', 'name' => 'Product 1', 'qty' => 1, 'price' => 9.99, 'options' => array('size' => 'large')));
+// Add multiple items
+$cart->add([
+    [
+        'id' => 'LEA_1',
+        'name' => 'Product 1',
+        'quantity' => 1,
+        'price' => 1789.43,
+        'options' => [
+            'condition' => 'nm',
+            'style' => 'normal'
+        ]
+    ],
+    [
+        'id' => 'KTK_8',
+        'name' => 'Product 2',
+        'quantity' => 1,
+        'price' => 12.43,
+        'options' => [
+            'condition' => 'sp',
+            'style' => 'foil'
+        ]
+    ]
+]);
 
-// Batch method
-Cart::add(array(
-  array('id' => '293ad', 'name' => 'Product 1', 'qty' => 1, 'price' => 10.00),
-  array('id' => '4832k', 'name' => 'Product 2', 'qty' => 1, 'price' => 10.00, 'options' => array('size' => 'large'))
-));
 ```
 
-**Cart::update()**
+### Updating Items
 
 ```php
-/**
- * Update the quantity of one row of the cart
- *
- * @param  string        $rowId       The rowid of the item you want to update
- * @param  integer|Array $attribute   New quantity of the item|Array of attributes to update
- * @return boolean
- */
- $rowId = 'da39a3ee5e6b4b0d3255bfef95601890afd80709';
-
-Cart::update($rowId, 2);
-
-OR
-
-Cart::update($rowId, array('name' => 'Product 1'));
+$cart->update($cart->content()->first()->rowId, [ 'quantity' => 2 ]);
 ```
 
-**Cart::remove()**
+### Removing Items
 
 ```php
-/**
- * Remove a row from the cart
- *
- * @param  string  $rowId The rowid of the item
- * @return boolean
- */
-
- $rowId = 'da39a3ee5e6b4b0d3255bfef95601890afd80709';
-
-Cart::remove($rowId);
+$cart->remove($cart->content()->first()->rowId);
 ```
 
-**Cart::get()**
+### Retrieve Items
 
 ```php
-/**
- * Get a row of the cart by its ID
- *
- * @param  string $rowId The ID of the row to fetch
- * @return CartRowCollection
- */
-
-$rowId = 'da39a3ee5e6b4b0d3255bfef95601890afd80709';
-
-Cart::get($rowId);
+$cart->get($_POST['rowId']);
 ```
 
-**Cart::content()**
+### Get the cart content
 
 ```php
-/**
- * Get the cart content
- *
- * @return CartCollection
- */
-
-Cart::content();
+$cart->content();
 ```
 
-**Cart::destroy()**
+### Cart Destruction
 
 ```php
-/**
- * Empty the cart
- *
- * @return boolean
- */
-
-Cart::destroy();
+$cart->destroy();
 ```
 
-**Cart::total()**
+### Get the total of the cart items
 
 ```php
-/**
- * Get the price total
- *
- * @return float
- */
-
-Cart::total();
+$cart->total();
 ```
 
-**Cart::count()**
+### Get the number of items in the cart
 
 ```php
-/**
- * Get the number of items in the cart
- *
- * @param  boolean $totalItems Get all the items (when false, will return the number of rows)
- * @return int
- */
-
- Cart::count();      // Total items
- Cart::count(false); // Total rows
+ $cart->count();      // Total items
+ $cart->countRows(); // Total rows
 ```
 
 **Cart::search()**
@@ -158,12 +118,6 @@ Cart::total();
 
  Cart::search(array('id' => 1, 'options' => array('size' => 'L'))); // Returns an array of rowid(s) of found item(s) or false on failure
 ```
-
-## Collections
-
-As you might have seen, the `Cart::content()` and `Cart::get()` methods both return a Collection, a `CartCollection` and a `CartRowCollection`.
-
-These Collections extends the 'native' Laravel 4 Collection class, so all methods you know from this class can also be used on your shopping cart. With some addition to easily work with your carts content.
 
 ## Instances
 
@@ -220,7 +174,7 @@ Events are available for you to program custom logic before or after actions are
 | cart.updated($item)         | When an item in the cart is updated     |
 | cart.removing($item)        | When an item is about to be removed from the cart |
 | cart.removed($item)         | When an item is removed from the cart   |
-| cart.destroying()           | When the cart is about to be destoryed |
+| cart.destroying($cart)           | When the cart is about to be destoryed |
 | cart.destroyed()            | When the cart is destroyed              |
 
 
