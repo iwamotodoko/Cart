@@ -100,7 +100,7 @@ class Cart
     /**
      * Update the quantity of one row of the cart
      *
-     * @param  string $rowId The rowid of the item you want to update
+     * @param  string $rowId The id of the item you want to update
      * @param  array $data Array of attributes to update
      *
      * @throws \Laraverse\Cart\Exceptions\InvalidRowID
@@ -126,7 +126,7 @@ class Cart
     /**
      * Remove a row from the cart
      *
-     * @param  string $rowId The rowid of the item
+     * @param  string $rowId The id of the item
      *
      * @throws \Laraverse\Cart\Exceptions\InvalidRowID
      * @return boolean
@@ -398,7 +398,7 @@ class Cart
      * @param  string $rowId The ID of the row
      * @param  array $attributes An array of attributes to update
      *
-     * @return \Laraverse\Cart\CartCollection
+     * @return \Laraverse\Cart\Collections\Cart
      */
     protected function updateAttribute($rowId, $attributes)
     {
