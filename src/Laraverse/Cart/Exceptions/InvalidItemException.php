@@ -1,3 +1,5 @@
 <?php namespace Laraverse\Cart\Exceptions;
 
-class InvalidItemException extends \Exception {}
+class InvalidItemException extends \Exception
+{
+}

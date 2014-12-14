@@ -2,72 +2,69 @@
 
 use Illuminate\Support\Collection;
 
-class CartRowCollection extends Collection {
+class CartRowCollection extends Collection
+{
 
-	/**
-	 * The Eloquent model a cart is associated with
-	 *
-	 * @var string
-	 */
-	protected $associatedModel;
+    /**
+     * The Eloquent model a cart is associated with
+     *
+     * @var string
+     */
+    protected $associatedModel;
 
-	/**
-	 * An optional namespace for the associated model
-	 *
-	 * @var string
-	 */
-	protected $associatedModelNamespace;
+    /**
+     * An optional namespace for the associated model
+     *
+     * @var string
+     */
+    protected $associatedModelNamespace;
 
-	/**
-	 * Constructor for the CartRowCollection
-	 *
-	 * @param array    $items
-	 * @param string   $associatedModel
-	 * @param string   $associatedModelNamespace
-	 */
-	public function __construct($items, $associatedModel, $associatedModelNamespace)
-	{
-		parent::__construct($items);
+    /**
+     * Constructor for the CartRowCollection
+     *
+     * @param array $items
+     * @param string $associatedModel
+     * @param string $associatedModelNamespace
+     */
+    public function __construct($items, $associatedModel, $associatedModelNamespace)
+    {
+        parent::__construct($items);
 
-		$this->associatedModel = $associatedModel;
-		$this->associatedModelNamespace = $associatedModelNamespace;
-	}
+        $this->associatedModel = $associatedModel;
+        $this->associatedModelNamespace = $associatedModelNamespace;
+    }
 
-	public function __get($arg)
-	{
-		if($this->has($arg))
-		{
-			return $this->get($arg);
-		}
+    public function __get($arg)
+    {
+        if ($this->has($arg)) {
+            return $this->get($arg);
+        }
 
-		if($arg == strtolower($this->associatedModel))
-		{
-			$modelInstance = $this->associatedModelNamespace ? $this->associatedModelNamespace . '\\' .$this->associatedModel : $this->associatedModel;
-			$model = new $modelInstance;
+        if ($arg == strtolower($this->associatedModel)) {
+            $modelInstance = $this->associatedModelNamespace ? $this->associatedModelNamespace . '\\' . $this->associatedModel : $this->associatedModel;
+            $model = new $modelInstance;
 
-			return $model->find($this->id);
-		}
+            return $model->find($this->id);
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public function search($search, $strict = false)
-	{
-		foreach($search as $key => $value)
-		{
-			if($key === 'options')
-			{
-				$found = $this->{$key}->search($value);
-			}
-			else
-			{
-				$found = ($this->{$key} === $value) ? true : false;
-			}
+    public function search($search, $strict = false)
+    {
+        foreach ($search as $key => $value) {
+            if ($key === 'options') {
+                $found = $this->{$key}->search($value);
+            } else {
+                $found = ($this->{$key} === $value) ? true : false;
+            }
 
-			if( ! $found) return false;
-		}
+            if (!$found) {
+                return false;
+            }
+        }
 
-		return $found;
-	}
+        return $found;
+    }
 
 }
