@@ -3,6 +3,7 @@
 use Laraverse\Cart\Cart;
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
 use Illuminate\Session\Store as SessionStore;
+use Laraverse\Cart\Collections\Cart as CartCollection;
 use Laraverse\Cart\Collections\Row as RowCollection;
 use Laraverse\Cart\Collections\RowOptions as RowOptionsCollection;
 
@@ -258,6 +259,26 @@ class CartTest extends PHPUnit_Framework_TestCase {
 		$this->cart->update("a37595c76d81dac7f5eee81c7074fe6d113ce7a8", ['quantity' => 0]);
 
 		$this->assertTrue($this->cart->content()->isEmpty());
+	}
+
+	public function testCartCanGetContent()
+	{
+		$this->events->shouldReceive('fire')->once()->with('cart.adding', M::type('array'));
+		$this->events->shouldReceive('fire')->once()->with('cart.added', M::any());
+
+		$this->cart->add([
+			'id' => 'LEA_1',
+			'name' => 'Product 1',
+			'quantity' => 1,
+			'price' => 1789.43,
+			'options' => [
+				'condition' => 'nm',
+				'style' => 'normal'
+			]
+		]);
+
+		$this->assertInstanceOf(CartCollection::class, $this->cart->content());
+		$this->assertFalse($this->cart->content()->isEmpty());
 	}
 
 }
