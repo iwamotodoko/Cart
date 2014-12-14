@@ -1,8 +1,8 @@
-<?php namespace Laraverse\Cart;
+<?php namespace Laraverse\Cart\Collections;
 
 use Illuminate\Support\Collection;
 
-class CartRowOptionsCollection extends Collection
+class RowOptions extends Collection
 {
 
     public function __construct($items)

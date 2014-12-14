@@ -1,8 +1,8 @@
-<?php namespace Laraverse\Cart;
+<?php namespace Laraverse\Cart\Collections;
 
 use Illuminate\Support\Collection;
 
-class CartRowCollection extends Collection
+class Row extends Collection
 {
 
     /**

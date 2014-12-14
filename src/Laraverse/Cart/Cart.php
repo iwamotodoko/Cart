@@ -1,6 +1,9 @@
 <?php namespace Laraverse\Cart;
 
 use Illuminate\Contracts\Events\Dispatcher;
+use Laraverse\Cart\Collections\Cart as CartCollection;
+use Laraverse\Cart\Collections\Row as CartRowCollection;
+use Laraverse\Cart\Collections\RowOptions as CartRowOptionsCollection;
 
 class Cart
 {
