@@ -1,9 +1,6 @@
 <?php
 
 use Laraverse\Cart\Cart;
-use Laraverse\Cart\CartCollection;
-use Laraverse\Cart\CartRowCollection;
-use Laraverse\Cart\CartRowOptionsCollection;
 use \Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
 use Mockery as m;
 
