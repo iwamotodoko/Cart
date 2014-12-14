@@ -204,8 +204,8 @@ class Cart
             return $total;
         }
 
-        foreach ($cart AS $row) {
-            $total += $row->subtotal;
+        foreach ($cart as $row) {
+            $total += $row->getSubtotal();
         }
 
         return $total;
