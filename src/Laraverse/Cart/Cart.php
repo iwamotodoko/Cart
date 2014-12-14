@@ -507,6 +507,10 @@ class Cart
     /**
      * Checks that the item about to be added to the cart is valid.
      *
+     * @throws \Laraverse\Cart\Exceptions\InvalidItemException
+     * @throws \Laraverse\Cart\Exceptions\InvalidPriceException
+     * @throws \Laraverse\Cart\Exceptions\InvalidQtyException
+     *
      * @param array $item
      */
     protected function isValidItem(array $item)
