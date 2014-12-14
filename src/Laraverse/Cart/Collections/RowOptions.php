@@ -19,7 +19,7 @@ class RowOptions extends Collection
         return null;
     }
 
-    public function search($search, $strict = false)
+    public function search($search)
     {
         $found = false;
         foreach ($search as $key => $value) {

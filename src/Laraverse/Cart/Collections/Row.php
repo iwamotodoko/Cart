@@ -27,7 +27,7 @@ class Row extends Collection
         return $this->quantity * $this->price;
     }
 
-    public function search($search, $strict = false)
+    public function search($search)
     {
         $found = false;
         foreach ($search as $key => $value) {
