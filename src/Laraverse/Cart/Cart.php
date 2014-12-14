@@ -1,6 +1,7 @@
 <?php namespace Laraverse\Cart;
 
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Session\SessionManager;
 use Illuminate\Support\Collection;
 
 class Cart {
@@ -8,14 +9,14 @@ class Cart {
 	/**
 	 * Session class instance
 	 *
-	 * @var Illuminate\Session\SessionManager
+	 * @var \Illuminate\Session\SessionManager
 	 */
 	protected $session;
 
 	/**
 	 * Event class instance
 	 *
-	 * @var Illuminate\Contracts\Events\Dispatcher
+	 * @var \Illuminate\Contracts\Events\Dispatcher
 	 */
 	protected $event;
 
@@ -43,7 +44,7 @@ class Cart {
 	/**
 	 * Constructor
 	 *
-	 * @param Illuminate\Session\SessionManager                                                             $session Session class instance
+	 * @param \Illuminate\Session\SessionManager                                                             $session Session class instance
 	 * @param \Illuminate\Contracts\Events\Dispatcher $event Event class instance
 	 */
 	public function __construct($session, Dispatcher $event)
@@ -59,7 +60,7 @@ class Cart {
 	 *
 	 * @param  string  $instance  Cart instance name
 	 * @throws \Laraverse\Cart\Exceptions\InstanceException
-	 * @return \Larverse\Cart\Cart
+	 * @return \Laraverse\Cart\Cart
 	 */
 	public function instance($instance = null)
 	{
@@ -209,7 +210,7 @@ class Cart {
 	 * Get a row of the cart by its ID
 	 *
 	 * @param  string  $rowId  The ID of the row to fetch
-	 * @return Laraverse\Cart\CartCollection
+	 * @return \Laraverse\Cart\CartCollection
 	 */
 	public function get($rowId)
 	{
@@ -221,7 +222,7 @@ class Cart {
 	/**
 	 * Get the cart content
 	 *
-	 * @return Laraverse\Cart\CartRowCollection
+	 * @return \Laraverse\Cart\CartRowCollection
 	 */
 	public function content()
 	{
@@ -245,7 +246,7 @@ class Cart {
 		// Fire the cart.destroyed event
 		$this->event->fire('cart.destroyed');
 
-		return $result;
+		return $result === null;
 	}
 
 	/**
@@ -390,8 +391,8 @@ class Cart {
 	/**
 	 * Update the cart
 	 *
-	 * @param  Laraverse\Cart\CartCollection  $cart  The new cart content
-	 * @return void
+	 * @param  \Laraverse\Cart\CartCollection  $cart  The new cart content
+	 * @return boolean
 	 */
 	protected function updateCart($cart)
 	{
@@ -401,7 +402,7 @@ class Cart {
 	/**
 	 * Get the carts content, if there is no cart content set yet, return a new empty Collection
 	 *
-	 * @return Laraverse\Cart\CartCollection
+	 * @return \Laraverse\Cart\CartCollection
 	 */
 	protected function getContent()
 	{
@@ -425,7 +426,7 @@ class Cart {
 	 *
 	 * @param  string   $rowId  The ID of the row to update
 	 * @param  integer  $qty    The quantity to add to the row
-	 * @return Laraverse\Cart\CartCollection
+	 * @return \Laraverse\Cart\CartCollection
 	 */
 	protected function updateRow($rowId, $attributes)
 	{
@@ -465,7 +466,7 @@ class Cart {
 	 * @param  int     $qty      Item qty to add to the cart
 	 * @param  float   $price    Price of one item
 	 * @param  array   $options  Array of additional options, such as 'size' or 'color'
-	 * @return Laraverse\Cart\CartCollection
+	 * @return \Laraverse\Cart\CartCollection
 	 */
 	protected function createRow($rowId, $id, $name, $qty, $price, $options)
 	{
@@ -491,7 +492,7 @@ class Cart {
 	 *
 	 * @param  string  $rowId  The ID of the row
 	 * @param  int     $qty    The qty to add
-	 * @return Laraverse\Cart\CartCollection
+	 * @return \Laraverse\Cart\CartCollection
 	 */
 	protected function updateQty($rowId, $qty)
 	{
@@ -508,7 +509,7 @@ class Cart {
 	 *
 	 * @param  string  $rowId       The ID of the row
 	 * @param  array   $attributes  An array of attributes to update
-	 * @return Laraverse\Cart\CartCollection
+	 * @return \Laraverse\Cart\CartCollection
 	 */
 	protected function updateAttribute($rowId, $attributes)
 	{
