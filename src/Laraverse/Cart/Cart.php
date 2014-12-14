@@ -139,14 +139,13 @@ class Cart
         }
 
         $cart = $this->getContent();
+        $item = $this->get($rowId);
 
-        // Fire the cart.remove event
-        $this->event->fire('cart.removing', $this->get($rowId));
+        $this->event->fire('cart.removing', $item);
 
         $cart->forget($rowId);
 
-        // Fire the cart.removed event
-        $this->event->fire('cart.removed');
+        $this->event->fire('cart.removed', $item);
 
         return $this->updateCart($cart);
     }
@@ -366,6 +365,10 @@ class Cart
         }
 
         $cart->put($rowId, $row);
+
+        if(isset($data['quantity']) && (int) $data['quantity'] === 0) {
+            $this->remove($rowId);
+        }
 
         return $cart;
     }

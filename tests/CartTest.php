@@ -178,5 +178,60 @@ class CartTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('Black Lotus', $this->cart->content()->first()->name);
 	}
 
+	public function testCartCanRemoveItem()
+	{
+		$this->events->shouldReceive('fire')->once()->with('cart.adding', m::type('array'));
+		$this->events->shouldReceive('fire')->once()->with('cart.added', m::any());
+		$this->events->shouldReceive('fire')->once()->with('cart.removing', m::any());
+		$this->events->shouldReceive('fire')->once()->with('cart.removed', m::any());
+
+		$this->cart->add([
+			'id' => 'LEA_1',
+			'name' => 'Product 1',
+			'quantity' => 2,
+			'price' => 9.99,
+			'options' => [
+				'condition' => 'nm',
+				'style' => 'foil'
+			]
+		]);
+
+		$this->assertFalse($this->cart->content()->isEmpty());
+		$this->cart->remove("a37595c76d81dac7f5eee81c7074fe6d113ce7a8");
+		$this->assertTrue($this->cart->content()->isEmpty());
+	}
+
+	/**
+	 * @expectedException Laraverse\Cart\Exceptions\InvalidRowID
+	 */
+	public function testCartThrowsExceptionOnInvalidRowId()
+	{
+		$this->cart->update('invalidRowId', ['name' => 'Awesome stuff']);
+	}
+
+	public function testCartCanRemoveOnUpdate()
+	{
+		$this->events->shouldReceive('fire')->once()->with('cart.adding', m::any());
+		$this->events->shouldReceive('fire')->once()->with('cart.added', m::any());
+		$this->events->shouldReceive('fire')->once()->with('cart.updating', m::any());
+		$this->events->shouldReceive('fire')->once()->with('cart.updated', m::any());
+		$this->events->shouldReceive('fire')->once()->with('cart.removing', m::any());
+		$this->events->shouldReceive('fire')->once()->with('cart.removed', m::any());
+
+		$this->cart->add([
+			'id' => 'LEA_1',
+			'name' => 'Product 1',
+			'quantity' => 2,
+			'price' => 9.99,
+			'options' => [
+				'condition' => 'nm',
+				'style' => 'foil'
+			]
+		]);
+		$this->cart->update("a37595c76d81dac7f5eee81c7074fe6d113ce7a8", ['quantity' => 0]);
+
+		$this->assertTrue($this->cart->content()->isEmpty());
+	}
+
 }
 
