@@ -197,10 +197,12 @@ class CartTest extends PHPUnit_Framework_TestCase {
 		]);
 		$rowId = "a37595c76d81dac7f5eee81c7074fe6d113ce7a8";
 
-		$this->cart->update($rowId, ['quantity' => 2, 'name' => 'Black Lotus']);
+		$this->cart->update($rowId, ['quantity' => 2, 'name' => 'Black Lotus', 'options' => ['style'=>'normal']]);
 
 		$this->assertEquals(2, $this->cart->content()->first()->quantity);
 		$this->assertEquals('Black Lotus', $this->cart->content()->first()->name);
+		$this->assertEquals('normal', $this->cart->content()->first()->options->style);
+		$this->assertEquals('nm', $this->cart->content()->first()->options->condition);
 	}
 
 	public function testCartCanRemoveItem()
