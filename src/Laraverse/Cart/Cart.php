@@ -214,25 +214,29 @@ class Cart
     /**
      * Get the number of items in the cart
      *
-     * @param  boolean $totalItems Get all the items (when false, will return the number of rows)
-     *
      * @return int
      */
-    public function count($totalItems = true)
+    public function count()
     {
         $cart = $this->getContent();
-
-        if (!$totalItems) {
-            return $cart->count();
-        }
 
         $count = 0;
 
         foreach ($cart as $row) {
-            $count += $row->qty;
+            $count += $row->quantity;
         }
 
         return $count;
+    }
+
+    /**
+     * Get the number of rows in the cart.
+     *
+     * @return int
+     */
+    public function countRows()
+    {
+        return $this->getContent()->count();
     }
 
     /**
@@ -271,7 +275,7 @@ class Cart
         $cart = $this->getContent();
 
         $rowId = $this->generateRowId($data);
-
+        $data['rowId'] = $rowId;
         if ($cart->has($rowId)) {
             throw new ItemExistsException;
         } else {
