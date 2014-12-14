@@ -4,6 +4,11 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Laraverse\Cart\Collections\Cart as CartCollection;
 use Laraverse\Cart\Collections\Row as CartRowCollection;
 use Laraverse\Cart\Collections\RowOptions as CartRowOptionsCollection;
+use Laraverse\Cart\Exceptions\InstanceException;
+use Laraverse\Cart\Exceptions\InvalidPriceException;
+use Laraverse\Cart\Exceptions\InvalidQtyException;
+use Laraverse\Cart\Exceptions\InvalidItemException;
+use Laraverse\Cart\Exceptions\InvalidRowIDException;
 
 class Cart
 {
@@ -54,7 +59,7 @@ class Cart
     public function instance($instance = null)
     {
         if (empty($instance)) {
-            throw new Exceptions\InstanceException;
+            throw new InstanceException;
         }
 
         $this->instance = $instance;
@@ -103,7 +108,7 @@ class Cart
     public function update($rowId, $attribute)
     {
         if (!$this->hasRowId($rowId)) {
-            throw new Exceptions\InvalidRowIDException;
+            throw new InvalidRowIDException;
         }
 
         if (is_array($attribute)) {
@@ -139,7 +144,7 @@ class Cart
     public function remove($rowId)
     {
         if (!$this->hasRowId($rowId)) {
-            throw new Exceptions\InvalidRowIDException;
+            throw new InvalidRowIDException;
         }
 
         $cart = $this->getContent();
@@ -280,15 +285,15 @@ class Cart
     protected function addRow($id, $name, $qty, $price, array $options = [])
     {
         if (empty($id) || empty($name) || empty($qty) || !isset($price)) {
-            throw new Exceptions\InvalidItemException;
+            throw new InvalidItemException;
         }
 
         if (!is_numeric($qty)) {
-            throw new Exceptions\InvalidQtyException;
+            throw new InvalidQtyException;
         }
 
         if (!is_numeric($price)) {
-            throw new Exceptions\InvalidPriceException;
+            throw new InvalidPriceException;
         }
 
         $cart = $this->getContent();
@@ -483,13 +488,13 @@ class Cart
     protected function isValidItem(array $item)
     {
         if (empty($item)) {
-            throw new \Laraverse\Cart\Exceptions\InvalidItemException;
+            throw new InvalidItemException;
         }
         if (!is_numeric($item['quantity'])) {
-            throw new \Laraverse\Cart\Exceptions\InvalidQtyException;
+            throw new InvalidQtyException;
         }
         if (!is_numeric($item['price'])) {
-            throw new \Laraverse\Cart\Exceptions\InvalidPriceException;
+            throw new InvalidPriceException;
         }
     }
 
