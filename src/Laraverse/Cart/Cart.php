@@ -501,7 +501,7 @@ class Cart
      */
     protected function is_multi(array $array)
     {
-        return is_array(head($array));
+        return is_array(reset($array));
     }
 
     /**
