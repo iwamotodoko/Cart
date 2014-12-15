@@ -287,7 +287,7 @@ class CartTest extends PHPUnit_Framework_TestCase
         $this->events->shouldReceive('fire')->once()->with('cart.adding', M::type('array'));
         $this->events->shouldReceive('fire')->once()->with('cart.added', M::any());
         $this->events->shouldReceive('fire')->once()->with('cart.destroying', M::any());
-        $this->events->shouldReceive('fire')->once()->with('cart.destroyed');
+        $this->events->shouldReceive('fire')->once()->with('cart.destroyed', M::any());
 
         $this->cart->add([
             'id'       => 'LEA_1',

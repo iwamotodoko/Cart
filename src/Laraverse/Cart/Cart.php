@@ -92,11 +92,11 @@ class Cart
     {
         $this->isValidItem($data);
 
-        $this->event->fire('cart.adding', $data);
+        $this->event->fire('cart.adding', [$data, $this]);
 
         $result = $this->addRow($data);
 
-        $this->event->fire('cart.added', $result);
+        $this->event->fire('cart.added', [$result, $this]);
 
         return $result;
     }
@@ -116,11 +116,11 @@ class Cart
             throw new InvalidRowIDException;
         }
 
-        $this->event->fire('cart.updating', [$this->get($rowId), $data]);
+        $this->event->fire('cart.updating', [$this->get($rowId), $data, $this]);
 
         $result = $this->updateAttribute($rowId, $data);
 
-        $this->event->fire('cart.updated', $result);
+        $this->event->fire('cart.updated', [$result, $this]);
 
         return $result;
     }
@@ -142,11 +142,11 @@ class Cart
         $cart = $this->getContent();
         $item = $this->get($rowId);
 
-        $this->event->fire('cart.removing', $item);
+        $this->event->fire('cart.removing', [$item, $this]);
 
         $cart->forget($rowId);
 
-        $this->event->fire('cart.removed', $item);
+        $this->event->fire('cart.removed', [$item, $this]);
 
         return $this->updateCart($cart);
     }
@@ -184,11 +184,12 @@ class Cart
      */
     public function destroy()
     {
-        $this->event->fire('cart.destroying', $this->getContent());
+        $cart = $this;
+        $this->event->fire('cart.destroying', $cart);
 
         $this->session->forget($this->getInstance());
 
-        $this->event->fire('cart.destroyed');
+        $this->event->fire('cart.destroyed', $cart);
     }
 
     /**
