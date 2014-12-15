@@ -2,9 +2,7 @@
 
 A simple cart implementation.
 
-## Docs
-
-Coming Soonish maybe.
+[![Build Status](https://travis-ci.org/Garbee/Cart.svg?branch=master)](https://travis-ci.org/Garbee/Cart)
 
 ## Overview
 Look at one of the following topics to learn more about LaravelShoppingcart
@@ -106,49 +104,11 @@ $cart->total();
  $cart->countRows(); // Total rows
 ```
 
-**Cart::search()**
+### Search the cart item data
 
 ```php
-/**
- * Search if the cart has a item
- *
- * @param  Array  $search An array with the item ID and optional options
- * @return Array|boolean
- */
-
- Cart::search(array('id' => 1, 'options' => array('size' => 'L'))); // Returns an array of rowid(s) of found item(s) or false on failure
+ $cart->search(['name' => 'Black Lotus']); // Returns an array of rowid(s) of found item(s) or false on failure
 ```
-
-## Instances
-
-Now the packages also supports multiple instances of the cart. The way this works is like this:
-
-You can set the current instance of the cart with `Cart::instance('newInstance')`, at that moment, the active instance of the cart is `newInstance`, so when you add, remove or get the content of the cart, you work with the `newInstance` instance of the cart.
-If you want to switch instances, you just call `Cart::instance('otherInstance')` again, and you're working with the `otherInstance` again.
-
-So a little example:
-
-```php
-Cart::instance('shopping')->add('192ao12', 'Product 1', 1, 9.99);
-
-// Get the content of the 'shopping' cart
-Cart::content();
-
-Cart::instance('wishlist')->add('sdjk922', 'Product 2', 1, 19.95, array('size' => 'medium'));
-
-// Get the content of the 'wishlist' cart
-Cart::content();
-
-// If you want to get the content of the 'shopping' cart again...
-Cart::instance('shopping')->content();
-
-// And the count of the 'wishlist' cart again
-Cart::instance('wishlist')->count();
-```
-
-N.B. Keep in mind that the cart stays in the last set instance for as long as you don't set a different one during script execution.
-
-N.B.2 The default cart instance is called `main`, so when you're not using instances,`Cart::content();` is the same as `Cart::instance('main')->content()`.
 
 ## Exceptions
 The Cart package will throw exceptions if something goes wrong. This way it's easier to debug your code using the Cart package or to handle the error based on the type of exceptions. The Cart packages can throw the following exceptions:
@@ -174,7 +134,7 @@ Events are available for you to program custom logic before or after actions are
 | cart.updated($item)         | When an item in the cart is updated     |
 | cart.removing($item)        | When an item is about to be removed from the cart |
 | cart.removed($item)         | When an item is removed from the cart   |
-| cart.destroying($cart)           | When the cart is about to be destoryed |
+| cart.destroying($cart)      | When the cart is about to be destoryed |
 | cart.destroyed()            | When the cart is destroyed              |
 
 
