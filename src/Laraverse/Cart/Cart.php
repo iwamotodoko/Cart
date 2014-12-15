@@ -257,7 +257,7 @@ class Cart
             $found = $item->search($search);
 
             if ($found) {
-                $rows[] = $item->rowid;
+                $rows[] = $item->rowId;
             }
         }
 
