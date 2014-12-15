@@ -8,16 +8,22 @@ A simple cart implementation.
 Look at one of the following topics to learn more about LaravelShoppingcart
 
 * [Usage](#usage)
-* [Collections](#collections)
-* [Instances](#instances)
-* [Models](#models)
 * [Exceptions](#exceptions)
 * [Events](#events)
-* [Example](#example)
 
 ## Usage
 
-The cart provides the following packages:
+The cart provides the following abilities:
+
+* Create cart instance (default is "main")
+* Add item to cart.
+* Update item in cart by rowId.
+* Remove item in cart by rowId.
+* Destroy entire cart instance.
+* Get the total of the cart instance.
+* Search the cart by any property.
+* Get the number of rows in the cart.
+* Get the total number of items in the cart.
 
 ### Adding Items
 
