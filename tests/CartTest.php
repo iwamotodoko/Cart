@@ -470,6 +470,36 @@ class CartTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->cart->instance('baloo')->content()->has("712b7ad5e9ae898665dae6e8f3f500e75301b091"));
     }
 
+    public function testCartCanSearch()
+    {
+        $this->events->shouldReceive('fire')->twice()->with('cart.adding', M::type('array'));
+        $this->events->shouldReceive('fire')->twice()->with('cart.added', M::any());
+
+        $this->cart->instance('wishlist')->add([
+            'id'       => 'KTK_8',
+            'name'     => 'Product 1',
+            'quantity' => 9,
+            'price'    => 2.34,
+            'options'  => [
+                'condition' => 'nm',
+                'style'     => 'foil'
+            ]
+        ]);
+        $this->cart->instance('baloo')->add([
+            'id'       => 'LEA_1',
+            'name'     => 'Product 2',
+            'quantity' => 5,
+            'price'    => 5.85,
+            'options'  => [
+                'condition' => 'nm',
+                'style'     => 'normal'
+            ]
+        ]);
+
+        $this->assertEquals("dbb141434507a3132f5d87088bd9c2403846df28", $this->cart->instance('wishlist')->search(['id'=>'KTK_8'])[0]);
+        $this->assertEquals("712b7ad5e9ae898665dae6e8f3f500e75301b091", $this->cart->instance('baloo')->search(['id' => 'LEA_1'])[0]);
+    }
+
 
 }
 
