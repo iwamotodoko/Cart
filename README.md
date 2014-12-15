@@ -2,7 +2,7 @@
 
 A simple cart implementation.
 
-[![Build Status](https://travis-ci.org/Garbee/Cart.svg?branch=master)](https://travis-ci.org/Garbee/Cart)
+[![Build Status](https://travis-ci.org/Laraverse/Cart.svg?branch=master)](https://travis-ci.org/Laraverse/Cart)
 
 ## Overview
 Look at one of the following topics to learn more about LaravelShoppingcart
