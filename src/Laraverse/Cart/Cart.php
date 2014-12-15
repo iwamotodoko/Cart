@@ -436,7 +436,7 @@ class Cart
      */
     protected function isValidItem(array $item)
     {
-        if (!isset($item['name'])
+        if ( !isset($item['id'])
             || !isset($item['quantity'])
             || !isset($item['price'])
         ) {
