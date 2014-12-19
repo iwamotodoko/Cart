@@ -1,6 +1,6 @@
 ## Cart
 
-A simple cart implementation.
+A simple cart implementation. Fork from [LaravelShoppingcart](https://github.com/Crinsane/LaravelShoppingcart).
 
 [![Build Status](https://travis-ci.org/Laraverse/Cart.svg?branch=master)](https://travis-ci.org/Laraverse/Cart)
 
