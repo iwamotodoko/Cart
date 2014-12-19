@@ -1,8 +1,8 @@
-<?php namespace Laraverse\Cart\Facades;
+<?php namespace Laraverse\Cart\Support\Laravel;
 
-use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Facades\Facade as Base;
 
-class Cart extends Facade
+class Facade extends Base
 {
 
     /**
