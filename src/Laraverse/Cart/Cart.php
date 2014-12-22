@@ -74,7 +74,7 @@ class Cart
      *
      * @param string|array $data Item(s) to be added
      *
-     * @return void
+     * @return \Laraverse\Cart\Cart
      */
     public function add(array $data)
     {
@@ -86,6 +86,7 @@ class Cart
         } else {
             $this->addItem($data);
         }
+        return $this;
     }
 
     protected function addItem(array $data)
