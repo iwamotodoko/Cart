@@ -76,6 +76,14 @@ class Cart
         return $this->getInstance() . '.metadata.' . $key;
     }
 
+    /**
+     * Sets metadata in the session by a given key to the given value.
+     *
+     * @param $key
+     * @param $value
+     *
+     * @return void
+     */
     public function setMetadata($key, $value) {
         if(!is_array($value)) {
             $this->session->set($this->getMetadataKey($key), $value);
@@ -86,6 +94,13 @@ class Cart
         }
     }
 
+    /**
+     * Get stored metadata by a given key. If not key is given, then provide all the metadata.
+     *
+     * @param null $key
+     *
+     * @return mixed
+     */
     public function getMetadata($key = null) {
         if(!$key) {
             return $this->session->get($this->getMetadataKey());
