@@ -408,7 +408,7 @@ class CartTest extends PHPUnit_Framework_TestCase
                 ]
             ]
         ]);
-        $this->assertEquals(14, $this->cart->count());
+        $this->assertEquals(14, $this->cart->quantity());
     }
 
     public function testCartCanCountRows()
@@ -438,7 +438,7 @@ class CartTest extends PHPUnit_Framework_TestCase
                 ]
             ]
         ]);
-        $this->assertEquals(2, $this->cart->countRows());
+        $this->assertEquals(2, $this->cart->rowCount());
     }
 
     public function testCartCanHaveMultipleInstances()

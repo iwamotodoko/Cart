@@ -258,7 +258,7 @@ class Cart
      *
      * @return int
      */
-    public function count()
+    public function quantity()
     {
         $cart = $this->getContent();
 
@@ -276,7 +276,7 @@ class Cart
      *
      * @return int
      */
-    public function countRows()
+    public function rowCount()
     {
         return $this->getContent()->count();
     }
