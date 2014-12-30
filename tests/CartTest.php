@@ -500,6 +500,21 @@ class CartTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("712b7ad5e9ae898665dae6e8f3f500e75301b091", $this->cart->instance('baloo')->search(['id' => 'LEA_1'])[0]);
     }
 
+    public function testCanSetMetadata() {
+        $this->cart->setMetadata('customer', 'John Doe');
+        $this->assertEquals('John Doe', $this->cart->getMetadata('customer'));
+    }
+
+    public function testCanSetNestedMetadataWithStringKey() {
+        $this->cart->setMetadata('shipping.zip', 90210);
+        $this->assertEquals(90210, $this->cart->getMetadata('shipping.zip'));
+    }
+
+    public function testCanSetNestedMetadataWithArrayValue()
+    {
+        $this->cart->setMetadata('shipping', ['zip'=>90210]);
+        $this->assertEquals(90210, $this->cart->getMetadata('shipping.zip'));
+    }
 
 }
 

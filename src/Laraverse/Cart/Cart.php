@@ -69,6 +69,30 @@ class Cart
         return $this;
     }
 
+    private function getMetadataKey($key = null) {
+        if(!$key) {
+            return $this->getInstance() . '.metadata';
+        }
+        return $this->getInstance() . '.metadata.' . $key;
+    }
+
+    public function setMetadata($key, $value) {
+        if(!is_array($value)) {
+            $this->session->set($this->getMetadataKey($key), $value);
+        } else {
+            foreach ($value as $subkey => $data) {
+                $this->session->set($this->getMetadataKey($key . '.' . $subkey), $data);
+            }
+        }
+    }
+
+    public function getMetadata($key = null) {
+        if(!$key) {
+            return $this->session->get($this->getMetadataKey());
+        }
+        return $this->session->get($this->getMetadataKey($key));
+    }
+
     /**
      * Add a row to the cart
      *
