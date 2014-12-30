@@ -13,7 +13,7 @@ class CartServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app['cart'] = $this->app->share(function ($app) {
-            return new Cart($app['session'], $app['events']);
+            return new Cart('main', $app['session'], $app['events']);
         });
     }
 }

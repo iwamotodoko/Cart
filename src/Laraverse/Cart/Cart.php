@@ -39,15 +39,15 @@ class Cart
     /**
      * Constructor
      *
+     * @param String $instance
      * @param \Illuminate\Session\Store $session Session class instance
      * @param \Illuminate\Contracts\Events\Dispatcher $event Event class instance
      */
-    public function __construct(SessionStore $session, Dispatcher $event)
+    public function __construct($instance, SessionStore $session, Dispatcher $event)
     {
         $this->session = $session;
         $this->event = $event;
-
-        $this->instance = 'main';
+        $this->instance = $instance ?: 'main';
     }
 
     /**

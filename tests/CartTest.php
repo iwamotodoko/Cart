@@ -20,7 +20,7 @@ class CartTest extends PHPUnit_Framework_TestCase
         $session = M::mock(SessionStore::class)->makePartial();
         $this->events = M::mock(EventDispatcher::class);
 
-        $this->cart = new Cart($session, $this->events);
+        $this->cart = new Cart('test', $session, $this->events);
     }
 
     public function tearDown()
