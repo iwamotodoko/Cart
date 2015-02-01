@@ -431,9 +431,10 @@ class Cart
     {
         $cart = $this->getContent();
         $rowId = $this->generateRowId($data);
-        $options = $data['options'];
-        $data['options'] = new CartRowOptionsCollection($options);
-
+        if(isset($data['options'])) {
+            $options = $data['options'];
+            $data['options'] = new CartRowOptionsCollection($options);
+        }
         $newRow = new CartRowCollection($data);
 
         $cart->put($rowId, $newRow);
